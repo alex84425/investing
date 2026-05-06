@@ -18,18 +18,38 @@ argument-hint: 'tickers to compare (e.g. AVGO MRVL CRDO) or sector name'
 
 ## Procedure
 
-### Step 1：用 yfinance 抓取基本數據
+### Step 1：用 yfinance 抓取基本數據（含財報日 + 法說日）
 
 ```python
 import yfinance as yf
-from datetime import datetime
+from datetime import datetime, date
 
 tickers = ["AVGO", "MRVL", "CRDO"]  # 替換成要比較的標的
+
+def fmt_date(d):
+    if d is None:
+        return "N/A"
+    if isinstance(d, (int, float)):
+        return datetime.fromtimestamp(d).strftime("%Y-%m-%d")
+    if isinstance(d, (datetime, date)):
+        return str(d)[:10]
+    return str(d)[:10]
 
 results = []
 for t in tickers:
     stock = yf.Ticker(t)
     info = stock.info
+    cal = stock.calendar or {}
+
+    # 財報日（優先從 calendar 取，再 fallback info）
+    earnings_dates = cal.get("Earnings Date", [])
+    earnings_date = earnings_dates[0] if earnings_dates else (
+        info.get("earningsDate") or info.get("earningsTimestamp")
+    )
+
+    # 美股財報日 = 法說日；台股需手動查 MOPS
+    investor_day = fmt_date(earnings_dates[0]) + " (法說/財報)" if earnings_dates else "查 IR 頁面"
+
     results.append({
         "ticker": t,
         "price": info.get("currentPrice") or info.get("regularMarketPrice"),
@@ -37,30 +57,38 @@ for t in tickers:
         "trailing_pe": info.get("trailingPE"),
         "gross_margin": round(info.get("grossMargins", 0) * 100, 1),
         "market_cap_b": round(info.get("marketCap", 0) / 1e9, 1),
-        "earnings_date": info.get("earningsDate") or info.get("earningsTimestamp"),
+        "earnings_date": fmt_date(earnings_date),
+        "investor_day": investor_day,
     })
 
 # 排序：Forward PE 由低到高
 results.sort(key=lambda x: (x["forward_pe"] or 9999))
 
-print(f"{'Ticker':<8} {'Price':>8} {'Fwd PE':>8} {'Trl PE':>8} {'GrossM':>8} {'MktCap(B)':>10} {'EarningsDate'}")
-print("-" * 75)
+print(f"{'Ticker':<8} {'Price':>8} {'Fwd PE':>8} {'Trl PE':>8} {'GrossM':>8} {'MktCap(B)':>10} {'財報日':<14} {'法說日'}")
+print("-" * 95)
 for r in results:
-    ed = r["earnings_date"]
-    if isinstance(ed, (int, float)):
-        ed = datetime.fromtimestamp(ed).strftime("%Y-%m-%d")
-    print(f"{r['ticker']:<8} {str(r['price'] or 'N/A'):>8} {str(r['forward_pe'] or 'N/A'):>8} {str(r['trailing_pe'] or 'N/A'):>8} {str(r['gross_margin']) + '%':>8} {str(r['market_cap_b']) + 'B':>10} {ed or 'N/A'}")
+    print(f"{r['ticker']:<8} {str(r['price'] or 'N/A'):>8} {str(r['forward_pe'] or 'N/A'):>8} "
+          f"{str(r['trailing_pe'] or 'N/A'):>8} {str(r['gross_margin']) + '%':>8} "
+          f"{str(r['market_cap_b']) + 'B':>10} {r['earnings_date']:<14} {r['investor_day']}")
 ```
+
+> **注意**：
+> - 美股：財報日 = 法說日（同一天召開），直接從 `yf.Ticker.calendar` 取得
+> - 台股：yfinance 通常無財報日，需查 [公開資訊觀測站](https://mops.twse.com.tw) 或 Goodinfo
+> - 法說日若 yfinance 無資料，需至該公司 IR 頁面確認
 
 ### Step 2：輸出比較表
 
-格式如下：
+格式如下（**財報日與法說日為必填欄位，若在 7 天內須用 🔴 標示**）：
 
-| Ticker | 現價 | Forward PE | Trailing PE | 毛利率 | 市值 | 財報日 | 貴不貴 |
-|--------|------|-----------|-------------|--------|------|--------|--------|
-| AVGO   | ...  | 23.3x     | 82.6x       | 76.7%  | ...  | 2026-06-04 | ✅ 合理 |
-| MRVL   | ...  | 30.3x     | 53.5x       | 51.0%  | ...  | 2026-05-29 | ✅ 合理 |
-| CRDO   | ...  | 35.8x     | 107.8x      | 67.8%  | ...  | 2026-06-02 | 🟡 偏貴 |
+| Ticker | 現價 | Forward PE | Trailing PE | 毛利率 | 市值 | 財報日 | 法說日 | 貴不貴 |
+|--------|------|-----------|-------------|--------|------|--------|--------|--------|
+| AVGO   | ...  | 23.3x     | 82.6x       | 76.7%  | ...  | 2026-06-04 | 2026-06-04 | ✅ 合理 |
+| MRVL   | ...  | 30.3x     | 53.5x       | 51.0%  | ...  | 🔴 2026-05-29 | 🔴 2026-05-29 | ✅ 合理 |
+| CRDO   | ...  | 35.8x     | 107.8x      | 67.8%  | ...  | 2026-06-02 | 2026-06-02 | 🟡 偏貴 |
+
+> ⚠️ **財報日/法說日在 7 天內 → 必須用 🔴 標示，並在結論中提醒短期波動風險**
+> ⚠️ **台股若 yfinance 抓不到日期 → 明確標注「需查 MOPS」，不可留空或略過**
 
 ### Step 3：評估「貴不貴」
 

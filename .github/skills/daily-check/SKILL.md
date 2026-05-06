@@ -14,7 +14,7 @@ argument-hint: "no arguments needed"
 
 ## Step 1：抓取最新新聞，比對持倉
 
-1. 讀取 `台股倉位.md` 取得台股持倉清單
+1. 讀取 `tw_stock.md` 取得台股持倉清單
 2. 讀取 `personal_position.md` 取得美股持倉清單
 3. 用 `fetch_webpage` 抓取 https://www.newsdigest.ai/ 的內容（已驗證可存取）
 4. 比對新聞與持倉，**如果有任何新聞與持倉標的相關，用 ⚠️ 醒目標示提醒**
@@ -39,7 +39,7 @@ argument-hint: "no arguments needed"
 
 腳本會：
 
-1. 讀取 `台股倉位.md` 取得持倉名單
+1. 讀取 `tw_stock.md` 取得持倉名單
 2. 產生 Goodinfo 與 Google 搜尋連結
 3. 用 `fetch_webpage` 查詢各連結，判斷近一週是否有法說會
 4. 若一週內有法說會，用 🔴 標示

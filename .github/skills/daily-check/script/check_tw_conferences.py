@@ -25,8 +25,8 @@ TW_STOCK_MAP = {
 }
 
 
-def read_tw_positions(filepath: str = "台股倉位.md") -> list[str]:
-    """從台股倉位.md 讀取持倉名單"""
+def read_tw_positions(filepath: str = "tw_stock.md") -> list[str]:
+    """從tw_stock.md 讀取持倉名單"""
     p = Path(filepath)
     if not p.exists():
         # 嘗試從 workspace root 找
