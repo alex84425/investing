@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.14"
 dependencies = [
+    "cerebras-cloud-sdk>=1.0.0",
     "matplotlib>=3.10.9",
     "pandas>=3.0.2",
     "requests>=2.33.1",
