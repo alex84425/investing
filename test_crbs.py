@@ -1,19 +1,37 @@
-# !pip install cerebras-cloud-sdk
+# Direct REST API call to Cerebras (no pydantic dependency)
+# Python 3.14 beta breaks pydantic, so we use raw requests
 
 import os
+import json
+import urllib.request
 
-from cerebras.cloud.sdk import Cerebras
+API_KEY = os.environ.get("CEREBRAS_API_KEY", "csk-vw9w2prk846tyc8ymrh2t3yjtdfwpf5w594854kwdd3w4k4x")
 
-client = Cerebras(api_key=os.environ.get("CEREBRAS_API_KEY", "csk-vw9w2prk846tyc8ymrh2t3yjtdfwpf5w594854kwdd3w4k4x"))
+payload = json.dumps({
+    "model": "zai-glm-4.7",
+    "messages": [{"role": "user", "content": "分析 nv rubin and cerebras 再推論市場優劣"}],
+    "max_completion_tokens": 4096,
+    "temperature": 0.2,
+    "top_p": 1,
+    "stream": False,
+}).encode("utf-8")
 
-completion = client.chat.completions.create(
-    messages=[{"role": "user", "content": "Why is fast inference important?"}],
-    model="zai-glm-4.7",
-    max_completion_tokens=4096,
-    temperature=0.2,
-    top_p=1,
-    stream=False,
+req = urllib.request.Request(
+    "https://api.cerebras.ai/v1/chat/completions",
+    data=payload,
+    headers={
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {API_KEY}",
+        "User-Agent": "cerebras-test/1.0",
+    },
 )
 
-print("Content:", completion.choices[0].message.content)
-print("Reasoning:", completion.choices[0].message.reasoning)
+try:
+    with urllib.request.urlopen(req) as resp:
+        data = json.loads(resp.read().decode())
+    print("Model:", data["model"])
+    print("Content:", data["choices"][0]["message"]["content"][:500])
+    print("\nUsage:", json.dumps(data.get("usage", {}), indent=2))
+except urllib.error.HTTPError as e:
+    print(f"HTTP {e.code}: {e.reason}")
+    print("Response:", e.read().decode())
