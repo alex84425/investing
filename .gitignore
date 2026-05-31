@@ -1,2 +1,10 @@
 key.txt
 .claude/
+
+# 剪貼簿截圖暫存（clip2png.ps1 產生）
+.clip/
+
+# 監控頁產生物（由腳本重生，不需追蹤）
+AI-PC-社交工程/04_監控頁.html
+AI-PC-社交工程/05_搜尋趨勢.html
+AI-PC-社交工程/trends_data.json
