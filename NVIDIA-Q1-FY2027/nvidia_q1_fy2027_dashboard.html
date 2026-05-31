@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA (NVDA) Q1 FY2027 財報數據可視化儀表板</title>
+    
+    <!-- 引入高品質字型 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-main: #06070B;
+            --bg-card: rgba(18, 20, 32, 0.45);
+            --bg-card-hover: rgba(26, 29, 46, 0.65);
+            --border-glow: rgba(0, 255, 135, 0.15);
+            --border-normal: rgba(255, 255, 255, 0.08);
+            
+            --primary: #76B900;
+            --primary-glow: #00FF87;
+            --secondary: #00F0FF;
+            --purple: #8A2BE2;
+            --purple-glow: #D352FC;
+            
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --text-dark: #4B5563;
+            
+            --shadow-glow: 0 0 25px rgba(0, 255, 135, 0.15);
+            --shadow-purple: 0 0 25px rgba(138, 43, 226, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(118, 185, 0, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(138, 43, 226, 0.07) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* 頂部導航與標題 */
+        header {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-normal);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-glow {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--primary-glow), var(--secondary));
+            border-radius: 50%;
+            box-shadow: var(--shadow-glow);
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); box-shadow: 0 0 10px rgba(0, 255, 135, 0.3); }
+            100% { transform: scale(1.1); box-shadow: 0 0 25px rgba(0, 255, 135, 0.6); }
+        }
+
+        .logo-area h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #FFF, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .quarter-tag {
+            background: rgba(118, 185, 0, 0.1);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            color: var(--primary-glow);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(118, 185, 0, 0.1);
+        }
+
+        /* 主佈局容器 */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* 標題橫幅 */
+        .hero-banner {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .hero-banner h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            background: linear-gradient(135deg, #FFFFFF 30%, #9CA3AF 70%, var(--primary-glow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .hero-banner p {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* 頂部數據總覽 (Glassmorphism Cards) */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-normal);
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, transparent);
+            transition: all 0.4s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .metric-card:hover::before {
+            background: linear-gradient(90deg, var(--primary-glow), var(--secondary));
+        }
+
+        .metric-card.purple-theme:hover {
+            border-color: rgba(138, 43, 226, 0.3);
+            box-shadow: var(--shadow-purple);
+        }
+
+        .metric-card.purple-theme:hover::before {
+            background: linear-gradient(90deg, var(--purple-glow), var(--secondary));
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .metric-title {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(0, 255, 135, 0.1);
+            color: var(--primary-glow);
+            border: 1px solid rgba(0, 255, 135, 0.2);
+        }
+
+        .metric-badge.purple {
+            background: rgba(138, 43, 226, 0.15);
+            color: var(--purple-glow);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .metric-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #FFF, #E5E7EB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-footer {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .trend-up {
+            color: var(--primary-glow);
+            font-weight: 700;
+        }
+
+        /* 雙欄圖表與深度解析佈局 */
+        .content-split {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 1024px) {
+            .content-split {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-normal);
+            border-radius: 24px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-normal);
+            padding-bottom: 15px;
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #FFF;
+        }
+
+        .panel-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: var(--primary-glow);
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        .panel-title.purple::before {
+            background: var(--purple-glow);
+        }
+
+        /* 互動式 Tab 切換按鈕 */
+        .tab-switcher {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-normal);
+            padding: 4px;
+            border-radius: 12px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), #528200);
+            color: #FFF;
+            box-shadow: 0 4px 12px rgba(118, 185, 0, 0.2);
+        }
+
+        /* 互動式損益表表格 */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .financial-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .financial-table th, .financial-table td {
+            padding: 14px 16px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-normal);
+        }
+
+        .financial-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .financial-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .financial-table tr.highlight {
+            background: rgba(118, 185, 0, 0.04);
+            font-weight: 700;
+        }
+
+        .financial-table tr.highlight td {
+            color: #FFF;
+        }
+
+        .row-detail {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: normal;
+            display: block;
+            margin-top: 4px;
+        }
+
+        /* 資訊提示盒 */
+        .info-box {
+            background: rgba(138, 43, 226, 0.08);
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+        }
+
+        .info-box-icon {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .info-box-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-box-title {
+            font-weight: 700;
+            color: var(--purple-glow);
+            font-size: 0.95rem;
+        }
+
+        .info-box-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* SVG 圓環圖 */
+        .chart-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            height: 240px;
+            margin: 10px 0;
+        }
+
+        .svg-donut {
+            transform: rotate(-90deg);
+        }
+
+        .donut-segment {
+            transition: stroke-width 0.3s, stroke 0.3s;
+            cursor: pointer;
+        }
+
+        .donut-segment:hover {
+            stroke-width: 26;
+        }
+
+        .chart-center-text {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .chart-center-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        .chart-center-lbl {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        /* 圖例樣式 */
+        .legend-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .legend-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-normal);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .legend-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .legend-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            width: 100%;
+        }
+
+        .legend-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .legend-metrics {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Q2 互動式利潤模擬器 */
+        .simulator-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-normal);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sim-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sim-label-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .sim-val {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-glow);
+            font-weight: 700;
+        }
+
+        /* 自訂 Slider 樣式 */
+        .range-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            transition: background 0.3s;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-glow);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--primary-glow);
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .sim-result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .sim-result-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-normal);
+            border-radius: 14px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .sim-result-title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .sim-result-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        .sim-result-val.highlight {
+            color: var(--secondary);
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        /* 產品週期路線圖 Timeline */
+        .timeline-section {
+            background: var(--bg-card);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-normal);
+            border-radius: 24px;
+            padding: 30px;
+        }
+
+        .timeline-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 25px;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .timeline-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .timeline-container::before {
+                display: none;
+            }
+        }
+
+        /* 連接線 */
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-glow), var(--secondary), var(--purple-glow));
+            z-index: 1;
+        }
+
+        .timeline-node {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-normal);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-node:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .timeline-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--bg-main);
+            border: 4px solid var(--primary-glow);
+            box-shadow: 0 0 10px var(--primary-glow);
+            margin-bottom: 5px;
+        }
+
+        .timeline-node.cyan .timeline-dot {
+            border-color: var(--secondary);
+            box-shadow: 0 0 10px var(--secondary);
+        }
+
+        .timeline-node.purple .timeline-dot {
+            border-color: var(--purple-glow);
+            box-shadow: 0 0 10px var(--purple-glow);
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-glow);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .timeline-node.cyan .timeline-date {
+            color: var(--secondary);
+        }
+
+        .timeline-node.purple .timeline-date {
+            color: var(--purple-glow);
+        }
+
+        .timeline-node-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        .timeline-node-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .timeline-node-badge {
+            align-self: flex-start;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #FFF;
+            border: 1px solid var(--border-normal);
+        }
+
+        footer {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-normal);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 頂部導航 -->
+    <header>
+        <div class="logo-area">
+            <div class="logo-glow"></div>
+            <h1>NVIDIA FINANCIAL LAB</h1>
+        </div>
+        <div class="quarter-tag">Q1 FY2027 財報視覺化</div>
+    </header>
+
+    <main>
+        <!-- 標題橫幅 -->
+        <div class="hero-banner">
+            <h2>輝達 2027 財年第一季度<br>財務與策略可視化儀表板</h2>
+            <p>截至 2026 年 4 月 26 日的第一季成果，融合了 Blackwell 架構的瘋狂算力需求與罕見的金融證券估值飆升奇觀。</p>
+        </div>
+
+        <!-- 數據總覽 Glassmorphic Cards -->
+        <div class="metrics-grid">
+            <!-- 營收卡 -->
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">季度總營收</span>
+                    <span class="metric-badge">Record</span>
+                </div>
+                <div class="metric-value">$81.60B</div>
+                <div class="metric-footer">
+                    <span class="trend-up">▲ 85% YoY</span>
+                    <span>/ ▲ 20% QoQ</span>
+                </div>
+            </div>
+
+            <!-- 毛利率卡 -->
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title">毛利率 (Non-GAAP)</span>
+                    <span class="metric-badge">Stable</span>
+                </div>
+                <div class="metric-value">75.0%</div>
+                <div class="metric-footer">
+                    <span>與上季基本持平 (75.0%)</span>
+                </div>
+            </div>
+
+            <!-- 淨利卡 -->
+            <div class="metric-card purple-theme">
+                <div class="metric-header">
+                    <span class="metric-title" id="net-profit-title">GAAP 淨利</span>
+                    <span class="metric-badge purple" id="net-profit-badge">Investment Benefit</span>
+                </div>
+                <div class="metric-value" id="net-profit-val">$58.32B</div>
+                <div class="metric-footer">
+                    <span class="trend-up" id="net-profit-trend">含 $15.93B 股權投資收益</span>
+                </div>
+            </div>
+
+            <!-- 每股盈餘卡 -->
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title" id="eps-title">GAAP 稀釋 EPS</span>
+                    <span class="metric-badge">Beat</span>
+                </div>
+                <div class="metric-value" id="eps-val">$2.39</div>
+                <div class="metric-footer">
+                    <span class="trend-up" id="eps-trend">市場預估約 $1.76</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 雙欄佈局：損益表 vs 圖表解析 -->
+        <div class="content-split">
+            <!-- 左欄：核心財務與會計政策解析 -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">核心利潤與損益細表</div>
+                    <!-- Tab 切換按鈕 -->
+                    <div class="tab-switcher">
+                        <button class="tab-btn active" onclick="switchGAAP(true)">GAAP 模式</button>
+                        <button class="tab-btn" onclick="switchGAAP(false)">Non-GAAP 模式</button>
+                    </div>
+                </div>
+
+                <!-- 損益表表格 -->
+                <div class="table-container">
+                    <table class="financial-table">
+                        <thead>
+                            <tr>
+                                <th>財務項目 (USD)</th>
+                                <th style="text-align: right;">Q1 FY2027 實際</th>
+                                <th style="text-align: right;">去年同期 (YoY)</th>
+                                <th style="text-align: right;">上季度 (QoQ)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- 預設載入 GAAP 數據 -->
+                            <tr>
+                                <td>
+                                    <strong>營業收入 (Revenue)</strong>
+                                    <span class="row-detail">由 Blackwell 與 Hopper 先進算力強勢拉動</span>
+                                </td>
+                                <td style="text-align: right; font-weight: 600;">$81.60 B</td>
+                                <td style="text-align: right; color: var(--primary-glow);">+85%</td>
+                                <td style="text-align: right; color: var(--primary-glow);">+20%</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>毛利 (Gross Profit)</strong>
+                                    <span class="row-detail">毛利率 74.9%（GAAP 標準）</span>
+                                </td>
+                                <td style="text-align: right; font-weight: 600;">$61.12 B</td>
+                                <td style="text-align: right; color: var(--primary-glow);">+85%</td>
+                                <td style="text-align: right; color: var(--primary-glow);">+19%</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>營業費用 (Operating Expenses)</strong>
+                                    <span class="row-detail">包含 R&D 與大批股權激勵費用 (SBC)</span>
+                                </td>
+                                <td style="text-align: right; font-weight: 600; color: #EF4444;">$7.62 B</td>
+                                <td style="text-align: right;">+30%</td>
+                                <td style="text-align: right;">+12%</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td>
+                                    <strong>營業利益 (Operating Income)</strong>
+                                    <span class="row-detail">營業利潤率高達 65.6%</span>
+                                </td>
+                                <td style="text-align: right;">$53.50 B</td>
+                                <td style="text-align: right;">+96%</td>
+                                <td style="text-align: right;">+22%</td>
+                            </tr>
+                            <tr id="other-income-row">
+                                <td>
+                                    <strong>非營業收支 (Other Income, Net)</strong>
+                                    <span class="row-detail" style="color: var(--purple-glow);">包含 $15.93B 的股權投資重估收益</span>
+                                </td>
+                                <td style="text-align: right; font-weight: 600; color: var(--purple-glow);">+$15.93 B</td>
+                                <td style="text-align: right; color: var(--purple-glow);">暴增 58 倍</td>
+                                <td style="text-align: right; color: var(--purple-glow);">暴增</td>
+                            </tr>
+                            <tr class="highlight" style="background: rgba(138, 43, 226, 0.08);">
+                                <td>
+                                    <strong>稅前淨利 (Pretax Income)</strong>
+                                    <span class="row-detail">受營業利益與投資收益雙重推升</span>
+                                </td>
+                                <td style="text-align: right; color: var(--purple-glow); font-weight: 800;">$69.43 B</td>
+                                <td style="text-align: right;">大幅暴增</td>
+                                <td style="text-align: right;">+60%</td>
+                            </tr>
+                            <tr class="highlight">
+                                <td>
+                                    <strong>本期淨利 (Net Income)</strong>
+                                    <span class="row-detail">GAAP 稅率約 16.0%</span>
+                                </td>
+                                <td style="text-align: right; color: var(--primary-glow); font-weight: 800;">$58.32 B</td>
+                                <td style="text-align: right;">大幅暴增</td>
+                                <td style="text-align: right;">+40%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 財報奇觀提示框 -->
+                <div class="info-box" id="info-box">
+                    <div class="info-box-icon">🔮</div>
+                    <div class="info-box-content">
+                        <div class="info-box-title" id="info-title">會計奇觀：為什麼 GAAP 淨利會遠高於 Non-GAAP 淨利？</div>
+                        <div class="info-box-desc" id="info-desc">
+                            因為 GAAP 財報強制計入了 <strong>$15.93B</strong> 的「非營業投資未實現收益」（包含 Arm 等上市股票暴漲增值 $13.4B，以及未上市股權增值 $2.6B）。
+                            在 Non-GAAP（非公認會計準則）中，為了呈現核心營運，這筆非營業金融收益被完全扣除，因此 Non-GAAP 淨利為更符合業務常態的 <strong>$45.55B</strong>。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右欄：營收結構圖表 & Q2 互動利潤模擬器 -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title purple">營收結構剖析 (Q1 FY2027)</div>
+                </div>
+
+                <!-- 互動式 SVG 圓環圖 -->
+                <div class="chart-wrapper">
+                    <svg width="220" height="220" class="svg-donut" id="donut-chart">
+                        <!-- 背景圓環 -->
+                        <circle cx="110" cy="110" r="80" fill="transparent" stroke="rgba(255,255,255,0.05)" stroke-width="20"/>
+                        <!-- 資料中心 92.2% (周長 2 * pi * 80 = 502.65 => 92.2% = 463.4) -->
+                        <circle class="donut-segment" cx="110" cy="110" r="80" fill="transparent" stroke="var(--primary-glow)" stroke-width="20" 
+                                stroke-dasharray="463.4 502.65" stroke-dashoffset="0" onmouseover="showDonutDetail('Data Center', '$75.25B', '92.2%')" onmouseout="resetDonutDetail()"/>
+                        <!-- 邊緣運算 7.8% (7.8% = 39.2) -->
+                        <circle class="donut-segment" cx="110" cy="110" r="80" fill="transparent" stroke="var(--secondary)" stroke-width="20" 
+                                stroke-dasharray="39.2 502.65" stroke-dashoffset="-463.4" onmouseover="showDonutDetail('Edge Computing', '$6.35B', '7.8%')" onmouseout="resetDonutDetail()"/>
+                    </svg>
+                    
+                    <div class="chart-center-text">
+                        <span class="chart-center-val" id="center-val">$81.60B</span>
+                        <span class="chart-center-lbl" id="center-lbl">總季度營收</span>
+                    </div>
+                </div>
+
+                <!-- 圖例說明 -->
+                <div class="legend-grid">
+                    <div class="legend-item" onmouseover="showDonutDetail('Data Center', '$75.25B', '92.2%')" onmouseout="resetDonutDetail()">
+                        <div class="legend-color" style="background: var(--primary-glow); box-shadow: 0 0 8px var(--primary-glow);"></div>
+                        <div class="legend-info">
+                            <div class="legend-name">資料中心 (Data Center)</div>
+                            <div class="legend-metrics">
+                                <span>$75.25 B</span>
+                                <span>佔比 92.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="legend-item" onmouseover="showDonutDetail('Edge Computing', '$6.35B', '7.8%')" onmouseout="resetDonutDetail()">
+                        <div class="legend-color" style="background: var(--secondary); box-shadow: 0 0 8px var(--secondary);"></div>
+                        <div class="legend-info">
+                            <div class="legend-name">邊緣運算 (Edge)</div>
+                            <div class="legend-metrics">
+                                <span>$6.35 B</span>
+                                <span>佔比 7.8%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Q2 營業利益互動模擬器 -->
+                <div class="simulator-box">
+                    <div class="sim-row">
+                        <div class="sim-label-row">
+                            <span>Q2 FY2027 營收預估模擬</span>
+                            <span class="sim-val" id="slider-val">$91.0 B</span>
+                        </div>
+                        <input type="range" class="range-slider" id="revenue-slider" min="80" max="110" step="0.5" value="91" oninput="simulateMargins(this.value)">
+                    </div>
+
+                    <div class="sim-result-grid">
+                        <div class="sim-result-card">
+                            <div class="sim-result-title">預估營業毛利 (75.0%)</div>
+                            <div class="sim-result-val" id="sim-gp">$68.25 B</div>
+                        </div>
+                        <div class="sim-result-card">
+                            <div class="sim-result-title">預估 Non-GAAP 營業利益</div>
+                            <div class="sim-result-val highlight" id="sim-op">$59.95 B</div>
+                        </div>
+                    </div>
+                    <div class="sim-result-card" style="width: 100%;">
+                        <div class="sim-result-title">模擬營運利潤率 (Operating Margin)</div>
+                        <div class="sim-result-val" id="sim-margin" style="color: var(--primary-glow); font-weight: 800;">65.9%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 產品週期與供應鏈路線圖 Timeline -->
+        <div class="timeline-section">
+            <div class="panel-header" style="margin-bottom: 20px;">
+                <div class="panel-title purple">NVIDIA 算力晶片產品週期路線圖</div>
+            </div>
+            
+            <div class="timeline-container">
+                <!-- Hopper Node -->
+                <div class="timeline-node">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">Hopper 系列 (H100 / H200)</div>
+                    <div class="timeline-node-title">穩定高量出貨期</div>
+                    <div class="timeline-node-desc">雖然下一代 Blackwell 開始投產，但 H200 需求依然極為強勁，是本季度資料中心的核心盈利支柱。</div>
+                    <div class="timeline-node-badge">算力基石</div>
+                </div>
+
+                <!-- Blackwell Node -->
+                <div class="timeline-node cyan">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date" style="color: var(--secondary);">Blackwell 系列 (B200 / NVL72)</div>
+                    <div class="timeline-node-title">歷史最速產能拉升 (Ramp)</div>
+                    <div class="timeline-node-desc">黃仁勳稱需求進入「拋物線階段」。受限於 TSMC 先進封裝 (CoWoS) 產能緊繃，客戶訂單已排滿至 2027 財年下半年。</div>
+                    <div class="timeline-node-badge" style="background: rgba(0, 240, 255, 0.1); border-color: var(--secondary); color: var(--secondary);">產能極度供不應求</div>
+                </div>
+
+                <!-- Rubin Node -->
+                <div class="timeline-node purple">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date" style="color: var(--purple-glow);">Vera Rubin 系列 (下一代)</div>
+                    <div class="timeline-node-title">重磅預告發布</div>
+                    <div class="timeline-node-desc">預計將於 2026 年下半年（Q3 起）開始量產出貨。維持「一年一代」的超高速迭代節奏，壓制任何潛在競爭對手。</div>
+                    <div class="timeline-node-badge" style="background: rgba(138, 43, 226, 0.15); border-color: var(--purple-glow); color: var(--purple-glow);">未來爆發點 (2H 2026)</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 頁尾 -->
+    <footer>
+        <p>© 2026 NVIDIA Financial Visual Lab. 此儀表板基於 2026 年 5 月 20 日輝達官方發布之 Q1 FY2027 財務報告數據設計。</p>
+        <p style="margin-top: 5px;">本數據分析僅供 pair programming 與學術探討，不構成任何實質投資建議。</p>
+    </footer>
+
+    <!-- JavaScript 互動邏輯 -->
+    <script>
+        // GAAP / Non-GAAP 數據切換
+        const gaapData = {
+            netProfit: "$58.32B",
+            netProfitTitle: "GAAP 淨利",
+            netProfitBadge: "Investment Benefit",
+            netProfitTrend: "含 $15.93B 股權投資收益",
+            eps: "$2.39",
+            epsTitle: "GAAP 稀釋 EPS",
+            epsTrend: "市場預估約 $1.76",
+            rows: [
+                { name: "營業收入 (Revenue)", detail: "由 Blackwell 與 Hopper 先進算力強勢拉動", val: "$81.60 B", yoy: "+85%", qoq: "+20%", yoyStyle: "var(--primary-glow)", qoqStyle: "var(--primary-glow)" },
+                { name: "毛利 (Gross Profit)", detail: "毛利率 74.9%（GAAP 標準）", val: "$61.12 B", yoy: "+85%", qoq: "+19%", yoyStyle: "var(--primary-glow)", qoqStyle: "var(--primary-glow)" },
+                { name: "營業費用 (Operating Expenses)", detail: "包含 R&D 與大批股權激勵費用 (SBC)", val: "$7.62 B", yoy: "+30%", qoq: "+12%", valStyle: "#EF4444" },
+                { name: "營業利益 (Operating Income)", detail: "營業利潤率高達 65.6%", val: "$53.50 B", yoy: "+96%", qoq: "+22%", highlight: true },
+                { name: "非營業收支 (Other Income, Net)", detail: "包含 $15.93B 的股權投資重估收益", val: "+$15.93 B", yoy: "暴增 58 倍", qoq: "暴增", isOther: true },
+                { name: "稅前淨利 (Pretax Income)", detail: "受營業利益與投資收益雙重推升", val: "$69.43 B", yoy: "大幅暴增", qoq: "+60%", highlight: true, isPretax: true },
+                { name: "本期淨利 (Net Income)", detail: "GAAP 稅率約 16.0%", val: "$58.32 B", yoy: "大幅暴增", qoq: "+40%", highlight: true }
+            ],
+            infoTitle: "會計奇觀：為什麼 GAAP 淨利會遠高於 Non-GAAP 淨利？",
+            infoDesc: "因為 GAAP 財報強制計入了 <strong>$15.93B</strong> 的「非營業投資未實現收益」（包含 Arm 等上市股票暴漲增值 $13.4B，以及未上市股權增值 $2.6B）。在 Non-GAAP（非公認會計準則）中，為了呈現核心營運，這筆非營業金融收益被完全扣除，因此 Non-GAAP 淨利為更符合業務常態的 <strong>$45.55B</strong>。",
+            infoIcon: "🔮"
+        };
+
+        const nonGaapData = {
+            netProfit: "$45.55B",
+            netProfitTitle: "Non-GAAP 淨利",
+            netProfitBadge: "Core Business Realized",
+            netProfitTrend: "剔除非核心股權金融波動",
+            eps: "$1.87",
+            epsTitle: "Non-GAAP 稀釋 EPS",
+            epsTrend: "超越華爾街預估的 $1.76",
+            rows: [
+                { name: "營業收入 (Revenue)", detail: "由 Blackwell 與 Hopper 先進算力強勢拉動", val: "$81.60 B", yoy: "+85%", qoq: "+20%", yoyStyle: "var(--primary-glow)", qoqStyle: "var(--primary-glow)" },
+                { name: "毛利 (Gross Profit)", detail: "毛利率 75.0%（Non-GAAP 標準）", val: "$61.20 B", yoy: "+85%", qoq: "+20%", yoyStyle: "var(--primary-glow)", qoqStyle: "var(--primary-glow)" },
+                { name: "營業費用 (Operating Expenses)", detail: "Q1 起 Non-GAAP 不再排除 SBC 股權激勵費用", val: "$7.45 B", yoy: "+28%", qoq: "+11%", valStyle: "#EF4444" },
+                { name: "營業利益 (Operating Income)", detail: "營業利潤率達 65.9%", val: "$53.75 B", yoy: "+97%", qoq: "+21%", highlight: true },
+                { name: "非營業收支 (Other Income, Net)", detail: "已完全剔除金融股權估值波動", val: "+$0.27 B", yoy: "持平", qoq: "持平", isOther: true },
+                { name: "稅前淨利 (Pretax Income)", detail: "呈現純粹核心硬體與軟體業務利潤", val: "$54.02 B", yoy: "+98%", qoq: "+21%", highlight: true, isPretax: true },
+                { name: "本期淨利 (Net Income)", detail: "核心營運業務純利", val: "$45.55 B", yoy: "+80%", qoq: "+15%", highlight: true }
+            ],
+            infoTitle: "重要會計變更：Non-GAAP 計算方式有何調整？",
+            infoDesc: "輝達自 Q1 FY2027 起，在 Non-GAAP 財務指標的計算中，<strong>不再剔除股權激勵費用（SBC）</strong>。這意味著其 Non-GAAP 的營業費用略微增加，更接近 GAAP 常態，但也進一步提升了其財務指標與其他大型科技股（如 Apple、Microsoft）橫向對比時的真實度與透明度。",
+            infoIcon: "⚙️"
+        };
+
+        function switchGAAP(isGAAP) {
+            // 切換按鈕樣式
+            const btns = document.querySelectorAll('.tab-btn');
+            if (isGAAP) {
+                btns[0].classList.add('active');
+                btns[1].classList.remove('active');
+                updateMetricsAndTable(gaapData);
+            } else {
+                btns[0].classList.remove('active');
+                btns[1].classList.add('active');
+                updateMetricsAndTable(nonGaapData);
+            }
+        }
+
+        function updateMetricsAndTable(data) {
+            // 更新頂部卡片
+            document.getElementById('net-profit-val').innerText = data.netProfit;
+            document.getElementById('net-profit-title').innerText = data.netProfitTitle;
+            document.getElementById('net-profit-badge').innerText = data.netProfitBadge;
+            document.getElementById('net-profit-trend').innerText = data.netProfitTrend;
+            
+            document.getElementById('eps-val').innerText = data.eps;
+            document.getElementById('eps-title').innerText = data.epsTitle;
+            document.getElementById('eps-trend').innerText = data.epsTrend;
+
+            // 更新提示框
+            document.getElementById('info-title').innerText = data.infoTitle;
+            document.getElementById('info-desc').innerHTML = data.infoDesc;
+            document.querySelector('.info-box-icon').innerText = data.infoIcon;
+
+            if (data === nonGaapData) {
+                document.getElementById('info-box').style.background = 'rgba(0, 240, 255, 0.04)';
+                document.getElementById('info-box').style.borderColor = 'rgba(0, 240, 255, 0.2)';
+                document.getElementById('info-title').style.color = 'var(--secondary)';
+            } else {
+                document.getElementById('info-box').style.background = 'rgba(138, 43, 226, 0.08)';
+                document.getElementById('info-box').style.borderColor = 'rgba(138, 43, 226, 0.2)';
+                document.getElementById('info-title').style.color = 'var(--purple-glow)';
+            }
+
+            // 重繪表格
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            
+            data.rows.forEach(row => {
+                let tr = document.createElement('tr');
+                if (row.highlight) {
+                    tr.className = 'highlight';
+                    if (row.isPretax) {
+                        tr.style.background = 'rgba(138, 43, 226, 0.08)';
+                    }
+                }
+                
+                let yoyColor = row.yoyStyle ? `color: ${row.yoyStyle};` : '';
+                let qoqColor = row.qoqStyle ? `color: ${row.qoqStyle};` : '';
+                let valColor = row.valStyle ? `color: ${row.valStyle};` : '';
+                
+                if (row.isOther && data === nonGaapData) {
+                    valColor = '';
+                } else if (row.isOther && data === gaapData) {
+                    valColor = 'color: var(--purple-glow);';
+                }
+
+                tr.innerHTML = `
+                    <td>
+                        <strong>${row.name}</strong>
+                        <span class="row-detail">${row.detail}</span>
+                    </td>
+                    <td style="text-align: right; font-weight: 600; ${valColor}">${row.val}</td>
+                    <td style="text-align: right; ${yoyColor}">${row.yoy}</td>
+                    <td style="text-align: right; ${qoqColor}">${row.qoq}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 圓環圖互動效果
+        function showDonutDetail(name, value, pct) {
+            document.getElementById('center-val').innerText = value;
+            document.getElementById('center-val').style.color = (name === 'Data Center') ? 'var(--primary-glow)' : 'var(--secondary)';
+            document.getElementById('center-lbl').innerText = `${name} (${pct})`;
+        }
+
+        function resetDonutDetail() {
+            document.getElementById('center-val').innerText = "$81.60B";
+            document.getElementById('center-val').style.color = "#FFF";
+            document.getElementById('center-lbl').innerText = "總季度營收";
+        }
+
+        // Q2 利潤模擬器邏輯
+        function simulateMargins(val) {
+            const revenue = parseFloat(val);
+            document.getElementById('slider-val').innerText = `$${revenue.toFixed(1)} B`;
+
+            // 毛利 (75%)
+            const gp = revenue * 0.75;
+            document.getElementById('sim-gp').innerText = `$${gp.toFixed(2)} B`;
+
+            // 預估 Non-GAAP 營業利潤 (扣除固定營業費用 ~$8.3B)
+            const op = gp - 8.3;
+            document.getElementById('sim-op').innerText = `$${op.toFixed(2)} B`;
+
+            // 營運利益率
+            const margin = (op / revenue) * 100;
+            document.getElementById('sim-margin').innerText = `${margin.toFixed(1)}%`;
+        }
+    </script>
+</body>
+</html>

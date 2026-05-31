@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI PC 社交工程 — 投資儀表板</title>
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#141925; --panel2:#1c2333; --line:#2a3450;
+    --txt:#e6ecff; --muted:#8a96b3; --accent:#5b8cff; --green:#3fd68c;
+    --amber:#ffb454; --red:#ff5d6c; --nv:#76b900; --apple:#a8b3c4; --dgx:#5b8cff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI","Microsoft JhengHei",system-ui,sans-serif;
+       background:radial-gradient(1200px 600px at 70% -10%,#16203a 0,var(--bg) 60%);
+       color:var(--txt);line-height:1.6;padding:32px 20px;min-height:100vh}
+  .wrap{max-width:1080px;margin:0 auto}
+  header{margin-bottom:28px}
+  .kicker{color:var(--accent);font-weight:700;letter-spacing:3px;font-size:12px;text-transform:uppercase}
+  h1{font-size:30px;margin:6px 0 4px;background:linear-gradient(90deg,#fff,#9bb8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{color:var(--muted);font-size:14px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+  .card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+  .c1::before{background:var(--nv)} .c2::before{background:var(--apple)} .c3::before{background:var(--dgx)} .c4::before{background:var(--red)}
+  .price{font-size:20px;font-weight:800;margin:8px 0 2px;color:var(--green)}
+  .price small{font-size:11px;font-weight:400;color:var(--muted)}
+  .tag{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  .model{font-size:18px;font-weight:700;margin:4px 0 10px}
+  .spec{font-size:13px;color:var(--muted);margin-bottom:12px}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:20px;margin:2px 2px 0 0;border:1px solid var(--line);background:var(--panel2)}
+  .pill.t{border-color:var(--nv);color:var(--nv)} .pill.t2{border-color:var(--apple);color:var(--apple)} .pill.t3{border-color:var(--dgx);color:var(--dgx)}
+  .section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;margin:18px 0}
+  .section h2{font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .section h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  /* keyword heat bars */
+  .bar-row{display:grid;grid-template-columns:160px 1fr 56px;align-items:center;gap:12px;margin:10px 0}
+  .bar-label{font-size:13px;color:var(--txt)}
+  .bar-track{background:var(--panel2);border-radius:8px;height:14px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--accent),#8db4ff)}
+  .bar-val{font-size:12px;color:var(--muted);text-align:right}
+  /* token throughput */
+  .tp .bar-fill{background:linear-gradient(90deg,var(--green),#7af0b6)}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+  td .tk{font-weight:700}
+  .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:8px}
+  .node{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:13px;text-align:center}
+  .node b{display:block;font-size:15px}
+  .node.up{border-color:var(--green)}
+  .arrow{color:var(--muted);font-size:18px}
+  ol{padding-left:20px}
+  ol li{margin:8px 0}
+  .ticker{font-weight:700;color:var(--accent)}
+  footer{color:var(--muted);font-size:12px;margin-top:24px;border-top:1px solid var(--line);padding-top:14px}
+  a{color:var(--accent);text-decoration:none}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}.bar-row{grid-template-columns:120px 1fr 48px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">AI PC · 社交工程觀察</div>
+    <h1>跑 AI Agent，大家都買哪種 PC？</h1>
+    <div class="sub">關鍵字趨勢 → 四大配置 + 售價 → 投資動能映射　·　2026-05-31</div>
+  </header>
+
+  <!-- 四大配置卡片 -->
+  <div class="grid">
+    <div class="card c1">
+      <div class="tag">① 單卡暴力型 · CUDA 王道</div>
+      <div class="model">RTX 5090 自組</div>
+      <div class="spec">32GB GDDR7 · ~186 tok/s @8B</div>
+      <div class="price">~$4,000+ <small>整機/卡$2.9–3.5k</small></div>
+      <span class="pill t">最快吞吐</span><span class="pill t">生態成熟</span><span class="pill t">725W 耗電</span>
+    </div>
+    <div class="card c2">
+      <div class="tag">② 統一記憶體型 · 省心王</div>
+      <div class="model">Mac Studio M4 Max 128GB</div>
+      <div class="spec">128GB 統一記憶體 · ~400 GB/s</div>
+      <div class="price">~$3,500–4,000</div>
+      <span class="pill t2">跑70B不量化</span><span class="pill t2">省電</span><span class="pill t2">開箱即用</span>
+    </div>
+    <div class="card c3">
+      <div class="tag">③ CUDA+大記憶體 · 專業離線</div>
+      <div class="model">NVIDIA DGX Spark 128GB</div>
+      <div class="spec">128GB 統一記憶體 + CUDA</div>
+      <div class="price">$4,699 <small>↑18% 漲價</small></div>
+      <span class="pill t3">大模型</span><span class="pill t3">air-gapped</span><span class="pill t3">利基</span>
+    </div>
+    <div class="card c4">
+      <div class="tag">④ 性價比黑馬 · x86 統一記憶體</div>
+      <div class="model">AMD Strix Halo 128GB</div>
+      <div class="spec">Ryzen AI Max+ 395 · 256 GB/s</div>
+      <div class="price">~$2,000 <small>最便宜</small></div>
+      <span class="pill" style="border-color:var(--red);color:var(--red)">半價</span><span class="pill" style="border-color:var(--red);color:var(--red)">x86</span><span class="pill" style="border-color:var(--red);color:var(--red)">生態落後</span>
+    </div>
+  </div>
+
+  <!-- 售價比較 -->
+  <div class="section">
+    <h2><span class="dot" style="background:var(--green)"></span>售價比較（128GB 級別，USD · 2026/5）</h2>
+    <div class="bar-row"><span class="bar-label">DGX Spark</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:linear-gradient(90deg,var(--dgx),#9bb8ff)"></div></div><span class="bar-val">$4,699</span></div>
+    <div class="bar-row"><span class="bar-label">RTX 5090 整機</span><div class="bar-track"><div class="bar-fill" style="width:85%;background:linear-gradient(90deg,var(--nv),#a8e063)"></div></div><span class="bar-val">~$4,000</span></div>
+    <div class="bar-row"><span class="bar-label">Mac Studio M4 Max</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:linear-gradient(90deg,var(--apple),#d7deea)"></div></div><span class="bar-val">~$3,750</span></div>
+    <div class="bar-row"><span class="bar-label">AMD Strix Halo</span><div class="bar-track"><div class="bar-fill" style="width:43%;background:linear-gradient(90deg,var(--red),#ff8a94)"></div></div><span class="bar-val">~$2,000</span></div>
+    <p class="sub" style="margin-top:10px">⚠️ RTX 5090 與 DGX Spark 因<b>記憶體短缺</b>在 2026 上半年漲價（Spark +18%）。硬體漲價反映<b>上游記憶體吃緊</b>，正是下方「盯記憶體上游」論點的即時驗證。</p>
+  </div>
+
+  <!-- 關鍵字熱度（真實 Google Trends） -->
+  <div class="section">
+    <h2><span class="dot"></span>第 1 步 · 關鍵字搜尋熱度（真 Google Trends · today 3-m · 2026-05-31）</h2>
+    <div class="bar-row"><span class="bar-label">Mac Studio</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="bar-val" style="color:var(--red)">38　-53%▼</span></div>
+    <div class="bar-row"><span class="bar-label">RTX 5090</span><div class="bar-track"><div class="bar-fill" style="width:91%"></div></div><span class="bar-val" style="color:var(--red)">35　-41%▼</span></div>
+    <div class="bar-row"><span class="bar-label">local LLM</span><div class="bar-track"><div class="bar-fill" style="width:42%"></div></div><span class="bar-val" style="color:var(--red)">16　-66%▼</span></div>
+    <div class="bar-row"><span class="bar-label">DGX Spark</span><div class="bar-track"><div class="bar-fill" style="width:21%"></div></div><span class="bar-val" style="color:var(--red)">8　-49%▼</span></div>
+    <div class="bar-row"><span class="bar-label">AMD Strix Halo</span><div class="bar-track"><div class="bar-fill" style="width:1%"></div></div><span class="bar-val" style="color:var(--red)">0　-80%▼</span></div>
+    <p class="sub" style="margin-top:10px">數值＝近 14 日平均搜尋熱度(相對 0–100)，右為動能(近14日 vs 前14日)。由 <code>05_搜尋趨勢_trends.py</code> 抓真實數據。<br>
+    <b style="color:var(--accent)">關鍵解讀：消費端 AI PC 搜尋全面降溫(全紅)，但記憶體仍在漲價 → 拉動 HBM 的是資料中心/Rubin，不是 AI PC。社交工程訊號獨立驗證「看 Rubin/HBM、不看 AI PC」。</b><br>
+    ※「Mac Studio」屬通用詞會壓低利基詞，僅供相對參考。</p>
+  </div>
+
+  <!-- token 吞吐 -->
+  <div class="section tp">
+    <h2><span class="dot" style="background:var(--green)"></span>Token 吞吐對比（Qwen3 8B Q4_K_M, tok/s）</h2>
+    <div class="bar-row"><span class="bar-label">RTX 5090</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="bar-val">186</span></div>
+    <div class="bar-row"><span class="bar-label">RTX 5090 @14B</span><div class="bar-track"><div class="bar-fill" style="width:67%"></div></div><span class="bar-val">124</span></div>
+    <div class="bar-row"><span class="bar-label">Mac Studio M4 Max</span><div class="bar-track"><div class="bar-fill" style="width:38%"></div></div><span class="bar-val">~70</span></div>
+    <div class="bar-row"><span class="bar-label">DGX Spark</span><div class="bar-track"><div class="bar-fill" style="width:33%"></div></div><span class="bar-val">~60</span></div>
+  </div>
+
+  <!-- 表格 -->
+  <div class="section">
+    <h2><span class="dot"></span>第 2 步 · 四種配置完整對照</h2>
+    <table>
+      <thead><tr><th>類型</th><th>代表機種</th><th>記憶體</th><th>售價(USD)</th><th>強項</th><th>弱項</th><th>受惠標的</th></tr></thead>
+      <tbody>
+        <tr><td class="tk">① 單卡暴力型</td><td>RTX 5090</td><td>32GB</td><td>~$4,000</td><td>最快吞吐、生態成熟</td><td>725W、VRAM 卡 70B</td><td><span class="ticker">NVDA · MU</span></td></tr>
+        <tr><td class="tk">② 統一記憶體</td><td>Mac Studio M4 Max</td><td>128GB</td><td>~$3,750</td><td>跑70B不量化、省電、好用</td><td>帶寬輸 5090、非 CUDA</td><td><span class="ticker">AAPL · TSM</span></td></tr>
+        <tr><td class="tk">③ CUDA+大記憶體</td><td>DGX Spark</td><td>128GB</td><td>$4,699</td><td>大模型+CUDA、適離線合規</td><td>利基、性價比爭議</td><td><span class="ticker">NVDA</span></td></tr>
+        <tr><td class="tk">④ 性價比黑馬</td><td>AMD Strix Halo</td><td>128GB</td><td>~$2,000</td><td>半價、x86、Linux、70B 略勝 Mac</td><td>軟體生態落後 CUDA</td><td><span class="ticker">AMD · TSM · MU</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 更好的做法 -->
+  <div class="section">
+    <h2><span class="dot" style="background:var(--amber)"></span>第 3 步 · 更好的做法：盯「賣鏟子的上游」</h2>
+    <p class="sub" style="margin-bottom:14px">熱搜的是「型號名」，但賺錢的是上游。不管買哪台，錢最後都流向同一處 —</p>
+    <div class="flow">
+      <div class="node">RTX 5090<br><span class="sub">CUDA</span></div>
+      <div class="node">Mac Studio<br><span class="sub">Apple</span></div>
+      <div class="node">DGX Spark<br><span class="sub">CUDA</span></div>
+      <div class="node">AMD Strix Halo<br><span class="sub">x86</span></div>
+      <span class="arrow">→</span>
+      <div class="node up"><b>HBM / 記憶體</b><span class="ticker">MU · SK Hynix</span></div>
+      <div class="node up"><b>先進封裝 + 晶圓</b><span class="ticker">TSM</span></div>
+    </div>
+    <ol style="margin-top:16px">
+      <li><b>抓結構性公約數</b>：三配置全吃 HBM + 先進封裝 + 晶圓代工 → 盯 <span class="ticker">TSM · MU · SK Hynix</span>（鏟子的鏟子），動能不被單一機種輪動打斷。</li>
+      <li><b>Google Trends 當領先指標</b>：追 <code>RTX 5090 / DGX Spark / Mac Studio AI / local LLM / VRAM</code> 的週月斜率，轉正+破前高 → 通常領先財報 1–2 季。</li>
+      <li><b>賣方訊號交叉驗證</b>：搜尋趨勢疊出貨/缺貨/交期新聞，缺貨 = 需求&gt;供給 = 動能確認。</li>
+    </ol>
+  </div>
+
+  <footer>
+    資料來源：modemguides · compute-market · mindstudio · insiderllm · Julien Simon (Medium)。
+    熱度條為示意值；可由 <code>03_動能掃描_momentum_scan.py</code> 抓實測 Trends + 價量動能。
+  </footer>
+</div>
+</body>
+</html>
