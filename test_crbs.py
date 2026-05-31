@@ -5,7 +5,7 @@ import os
 import json
 import urllib.request
 
-API_KEY = os.environ.get("CEREBRAS_API_KEY", "csk-vw9w2prk846tyc8ymrh2t3yjtdfwpf5w594854kwdd3w4k4x")
+API_KEY = os.environ.get("CEREBRAS_API_KEY", "")  # 從環境變數讀取，勿硬編金鑰
 
 payload = json.dumps({
     "model": "zai-glm-4.7",
