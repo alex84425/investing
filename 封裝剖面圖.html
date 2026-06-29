@@ -27,7 +27,8 @@
     <span><i class="sw" style="background:#3a4257"></i>結構層</span>
     <span><i class="sw" style="background:#ffcc66"></i>GPU / Logic</span>
     <span><i class="sw" style="background:#6ee7a8"></i>HBM 記憶體疊層</span>
-    <span><i class="sw" style="background:#4cc2ff"></i>CPO 光引擎</span>
+    <span><i class="sw" style="background:#4cc2ff"></i>CPO 光引擎（矽光子）</span>
+    <span><i class="sw" style="background:#ff6b9d"></i>InP 磷化銦雷射晶粒</span>
     <span><i class="sw" style="background:#ffa657"></i>基板 ABF→玻璃</span>
     <span><i class="sw" style="background:#b99cff"></i>凸塊 / TSV 互連</span>
   </div>
@@ -114,13 +115,19 @@
       <text x="700" y="326" fill="#9af0c0" font-size="12.5" font-weight="700" text-anchor="middle">HBM</text>
     </g>
 
-    <!-- ===== 右側 CPO 光引擎 + 光纖 ===== -->
-    <rect x="790" y="392" width="60" height="38" rx="4" fill="url(#gCpo)" stroke="#2f8fc4"/>
-    <text x="820" y="416" fill="#04293a" font-size="11" font-weight="800" text-anchor="middle">CPO</text>
+    <!-- ===== 右側 CPO 光引擎（矽光子 + InP 雷射）+ 光纖 ===== -->
+    <rect x="788" y="386" width="64" height="44" rx="4" fill="url(#gCpo)" stroke="#2f8fc4"/>
+    <text x="820" y="402" fill="#04293a" font-size="11" font-weight="800" text-anchor="middle">CPO 矽光子</text>
+    <!-- InP 磷化銦雷射晶粒：異質整合貼在矽光子上 -->
+    <rect x="796" y="408" width="48" height="16" rx="2" fill="#ff6b9d" stroke="#c93f70"/>
+    <text x="820" y="420" fill="#3a0018" font-size="9.5" font-weight="800" text-anchor="middle">InP 雷射</text>
     <!-- 光纖拉出 -->
-    <path d="M850 405 Q 920 405 945 380" stroke="#4cc2ff" stroke-width="3" fill="none"/>
-    <circle cx="945" cy="380" r="4" fill="#4cc2ff"/>
-    <text x="905" y="372" fill="#8ad8ff" font-size="11" text-anchor="middle">光纖 out</text>
+    <path d="M852 400 Q 920 400 945 376" stroke="#4cc2ff" stroke-width="3" fill="none"/>
+    <circle cx="945" cy="376" r="4" fill="#4cc2ff"/>
+    <text x="905" y="368" fill="#8ad8ff" font-size="11" text-anchor="middle">光纖 out</text>
+    <!-- InP 引線標籤 -->
+    <line x1="844" y1="416" x2="930" y2="416" stroke="#6b768c" stroke-dasharray="3 3"/>
+    <text x="935" y="420" fill="#ff6b9d" font-weight="700" font-size="12.5">InP 磷化銦（雷射光源）</text>
 
     <!-- ===== 左側大括號：CoWoS 封裝範圍 ===== -->
     <path d="M62 318 Q 50 318 50 332 L50 472 Q 50 486 38 486 Q 50 486 50 500 L50 482" fill="none" stroke="#ffcc66" stroke-width="2"/>
@@ -152,8 +159,62 @@
     <b>PCB</b> 主機板 →（BGA 球）→ <b>基板</b>（現役 ABF，下一代換<b>玻璃基板</b>）→（C4 凸塊）→
     <b>矽中介層</b>（這層＋上面所有晶片合稱 <b>CoWoS</b>）→（微凸塊）→ 最上面 <b>GPU 核心</b> 與 <b>HBM 疊疊樂</b> 當鄰居並排坐，
     旁邊塞 <b>CPO 光引擎</b> 把光纖直接拉出去。<br>
+    💡 <b>CPO 裡的粉紅色小塊＝InP 磷化銦雷射晶粒</b>：矽光子本身不會發光，真正的雷射光源得用 <b>磷化銦 (InP)</b>，以異質整合貼到矽光子上 —— 這才是整顆 CPO 最關鍵、最難做、價值最高的料。<br>
     👉 把圓晶圓中介層換成大方板、底下配玻璃基板，就升級成下一代 <b>CoPoS</b>。
   </div>
+
+  <div class="note" style="background:#101a14;border-color:#1e3a2a;color:#cfe9da">
+    <b style="color:#6ee7a8">ABF 到底是啥？</b>　全名 <b style="color:#6ee7a8">Ajinomoto Build-up Film（味之素增層膜）</b> ——
+    對，就是做味精「味之素」的那家日本公司。它是一張<b>絕緣樹脂薄膜</b>，當作封裝基板裡的<b>層間絕緣膜</b>：
+    鋪一張 ABF → 雷射鑽微孔 → 鍍銅長出下一層線路，如此一層層 <i>build-up</i> 疊出十幾層的高密度基板。<br>
+    🏆 <b>近乎獨佔</b>：全球高階 ABF 約 <b>9 成</b>由味之素供應，Intel／AMD／NVIDIA 高階晶片基板底層幾乎都靠它 —— 教科書級的隱形冠軍。<br>
+    ⚠️ <b>痛點</b>：有機膜，封裝做大就會<b>翹 (warpage)</b>、線路密度到頂 →
+    這正是下一代要改用 <b style="color:#ffcc66">玻璃基板</b> 接棒的原因。
+  </div>
+
+  <h2 style="font-size:19px;margin:26px 0 4px;color:#e6ebf2">各環節的<span style="color:#ff6b6b">死穴</span> — 最難在哪</h2>
+  <div style="color:#9aa7b8;font-size:13px;margin-bottom:10px">封裝越做越大、越疊越高，貫穿全場的兩個魔王＝<b style="color:#ffcc66">翹曲／碎裂</b> 與 <b style="color:#ff8a5c">散熱</b></div>
+  <table style="width:100%;border-collapse:collapse;font-size:13.5px;border:1px solid #2a3344;border-radius:12px;overflow:hidden">
+    <thead>
+      <tr style="background:#161d2b;color:#cdd6e3;text-align:left">
+        <th style="padding:10px 12px;border-bottom:1px solid #2a3344">環節</th>
+        <th style="padding:10px 12px;border-bottom:1px solid #2a3344">核心困難</th>
+        <th style="padding:10px 12px;border-bottom:1px solid #2a3344">一句話死穴</th>
+      </tr>
+    </thead>
+    <tbody style="color:#dfe5ef">
+      <tr style="background:#0e131d">
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a;color:#ffcc66;font-weight:700;white-space:nowrap">矽中介層</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a">做「大」＋良率：切自 12 吋圓晶圓，超過光罩尺寸要拼接，面積越大一顆瑕疵就毀整片</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a">圓晶圓尺寸卡死，NVIDIA 缺貨主因</td>
+      </tr>
+      <tr style="background:#0b101a">
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a;color:#ffb877;font-weight:700;white-space:nowrap">ABF 基板</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a">翹曲＋層數良率：有機樹脂 CTE 大，大面積受熱就翹；疊 20+ 層任一層對位偏掉整片廢</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a">有機膜撐不住大封裝</td>
+      </tr>
+      <tr style="background:#0e131d">
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a;color:#6ee7a8;font-weight:700;white-space:nowrap">HBM</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a">疊高＋散熱：12～16 層磨到 &lt;50μm 薄如紙易裂；上萬 TSV 要層層對齊；越高越熱散不掉</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a">越高越熱越易碎</td>
+      </tr>
+      <tr style="background:#0b101a">
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a;color:#ff6b9d;font-weight:700;white-space:nowrap">CPO／InP</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a">異質整合＋可靠度：矽不發光，InP 雷射要次微米對位貼上；InP 晶圓小又脆又貴；雷射怕熱、壞了整顆封裝報廢</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a">雷射長錯材料、壞了整顆廢</td>
+      </tr>
+      <tr style="background:#0e131d">
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a;color:#8ad8ff;font-weight:700;white-space:nowrap">玻璃基板</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a">脆裂＋TGV：又硬又脆，搬運／鑽孔／熱循環易碎，一裂全毀；幾十萬個穿玻璃孔要鍍勻；產線生態未成熟</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #222a3a">一裂全毀，產線未成熟（2027～28 才放量）</td>
+      </tr>
+      <tr style="background:#0b101a">
+        <td style="padding:10px 12px;color:#c9a8ff;font-weight:700;white-space:nowrap">CoPoS</td>
+        <td style="padding:10px 12px">圓改方＋良率爬坡：圓晶圓那套設備製程不能直接搬到大方板；面板越大缺陷損失也放大</td>
+        <td style="padding:10px 12px">整套製程重練</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 </body>
 </html>
