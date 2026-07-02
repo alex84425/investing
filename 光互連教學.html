@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>光互連教學 — 從整條光路到耦合剖面</title>
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#141925; --panel2:#1b2230; --line:#2a3344;
+    --txt:#e6ebf2; --dim:#9aa7b8; --accent:#4cc2ff; --gold:#ffcc66;
+    --green:#6ee7a8; --red:#ff7a85; --purple:#b99cff; --orange:#ffa657;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:"Segoe UI","Microsoft JhengHei",system-ui,sans-serif;line-height:1.6;padding:32px 20px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-size:30px;letter-spacing:.5px;margin-bottom:4px}
+  h1 .em{color:var(--accent)}
+  .sub{color:var(--dim);font-size:14px;margin-bottom:28px}
+  h2{font-size:21px;margin:40px 0 14px;padding-left:12px;border-left:4px solid var(--accent)}
+  .lead{color:var(--dim);font-size:15px;margin-bottom:18px}
+  b.t{color:var(--txt)}
+
+  .formula{background:linear-gradient(135deg,#15203a,#181426);border:1px solid var(--line);border-radius:14px;padding:20px;text-align:center;font-size:16px;margin-bottom:10px}
+  .formula b{color:var(--gold)}
+
+  /* horizontal light-path flow */
+  .flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;margin:10px 0 4px}
+  .seg{flex:1 1 0;min-width:150px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 12px;position:relative;margin:6px 14px 6px 0}
+  .seg:last-child{margin-right:0}
+  .seg::after{content:"▶";position:absolute;right:-15px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:13px}
+  .seg:last-child::after{content:""}
+  .seg.hot{box-shadow:0 0 0 2px var(--red) inset}
+  .seg .n{font-size:11px;color:var(--dim);letter-spacing:.5px}
+  .seg .h{font-size:15px;font-weight:700;margin:2px 0 6px}
+  .seg .d{font-size:12.5px;color:var(--dim);margin-bottom:8px}
+  .seg .who{font-size:12px}
+  .seg .who .k{color:var(--dim)}
+  .pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:1px 9px;font-size:12px;margin:3px 4px 0 0;color:var(--accent)}
+  .pill.tw{color:var(--gold)}
+  .pill.us{color:var(--green)}
+  .s-elec{border-top:3px solid var(--purple)}
+  .s-src{border-top:3px solid var(--orange)}
+  .s-pic{border-top:3px solid var(--accent)}
+  .s-cpl{border-top:3px solid var(--red)}
+  .s-fib{border-top:3px solid var(--green)}
+  .s-conn{border-top:3px solid var(--gold)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--dim);margin:8px 0 4px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i,.legend .sw{display:inline-block;border-radius:3px}
+  .legend i{width:22px;height:3px;border-radius:2px}
+  .sw{width:14px;height:14px}
+
+  svg{width:100%;height:auto;background:#0e131d;border:1px solid var(--line);border-radius:14px;margin-top:6px}
+  text{font-family:"Segoe UI","Microsoft JhengHei",sans-serif}
+
+  .note{background:#1a1410;border:1px solid #3a2a18;border-radius:12px;padding:14px 18px;margin-top:14px;font-size:14px;color:#e8d5bf}
+  .note b{color:var(--orange)}
+  .red{background:#1a1014;border-color:#3a1f25;color:#f0d5da}
+  .red b{color:var(--red)}
+  .grn,.key{background:#101a16;border:1px solid #1d3a2c;border-radius:12px;padding:14px 18px;margin-top:14px;font-size:14px;color:#cfeede}
+  .grn b,.key b{color:var(--green)}
+
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13.5px;background:var(--panel);border-radius:12px;overflow:hidden}
+  th,td{padding:11px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--panel2);font-size:12.5px;color:var(--dim);font-weight:600}
+  td:first-child{font-weight:700;white-space:nowrap}
+  .ok{color:var(--green);font-weight:700}
+  .hit{color:var(--red);font-weight:700}
+  .mid{color:var(--orange);font-weight:700}
+  .mine{box-shadow:inset 3px 0 0 var(--gold)}
+  footer{margin-top:40px;color:var(--dim);font-size:12px;text-align:center;border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>光互連 <span class="em">教學</span> — 從整條光路到耦合剖面</h1>
+  <div class="sub">先看①→⑥誰是誰，再把最難的第④格「耦合」拉近解剖 · ★=你的持倉 · 更新 2026-06-30</div>
+
+  <div class="formula">
+    一個 GPU 要跟另一個 GPU 講話：<br>
+    <b>電訊號</b> → 變成 <b>光</b> → 塞進 <b>光纖</b> → 跑過去 → 再變回電。<br>
+    <span style="font-size:13.5px;color:var(--dim)">這條路上<b style="color:var(--gold)">每一段都有人做</b>，「做 CPO」其實是<b class="t">一整條供應鏈</b>，不是單一件事。</span>
+  </div>
+
+  <!-- ============ PART 1 : FLOW ============ -->
+  <h2>一、光的旅程：六段 + 各段是誰</h2>
+  <p class="lead">由左到右就是光訊號實際走的路。紅框那格（第④耦合）就是 Glass Bridge 開刀的位置，下一節放大解剖。</p>
+
+  <div class="legend">
+    <span><i style="background:var(--purple)"></i>電/訊號</span>
+    <span><i style="background:var(--orange)"></i>光源</span>
+    <span><i style="background:var(--accent)"></i>光晶片</span>
+    <span><i style="background:var(--red)"></i>耦合(FAU)</span>
+    <span><i style="background:var(--green)"></i>光纖</span>
+    <span><i style="background:var(--gold)"></i>連接/線材</span>
+  </div>
+
+  <div class="flow">
+    <div class="seg s-elec">
+      <div class="n">① 電訊號處理</div>
+      <div class="h">SerDes / DSP</div>
+      <div class="d">把 GPU 出來的電訊號整形、加速、糾錯，準備變成光。</div>
+      <div class="who"><span class="k">誰：</span><br>
+        <span class="pill us">CRDO ★</span><span class="pill us">MRVL</span><span class="pill us">AVGO</span></div>
+    </div>
+    <div class="seg s-src">
+      <div class="n">② 光源（發光）</div>
+      <div class="h">雷射 + 磊晶</div>
+      <div class="d">產生雷射光（CW/EML）。磊晶圓是這顆雷射的「材料地基」(InP/GaAs)。</div>
+      <div class="who"><span class="k">誰：</span><br>
+        <span class="pill tw">聯亞 3081 ★</span><span class="pill us">LITE ★</span><span class="pill us">COHR</span></div>
+    </div>
+    <div class="seg s-pic">
+      <div class="n">③ 光晶片（調變）</div>
+      <div class="h">矽光子 PIC</div>
+      <div class="d">把電資料「刻」到光上（調變）、合波分波。光的運算核心。</div>
+      <div class="who"><span class="k">誰：</span><br>
+        <span class="pill us">CRDO ★<sup>*收購</sup></span><span class="pill us">AVGO</span><span class="pill">各晶圓廠</span></div>
+    </div>
+    <div class="seg s-cpl hot">
+      <div class="n">④ 耦合（對準接合）</div>
+      <div class="h">FAU ⇆ Glass Bridge</div>
+      <div class="d">把光晶片的光「對準塞進」光纖。尺寸差好幾倍，最難的一段。</div>
+      <div class="who"><span class="k">誰：</span><br>
+        <span class="pill tw">上詮</span><span class="pill tw">大立光</span><span class="pill us">GLW(橋)</span></div>
+    </div>
+    <div class="seg s-fib">
+      <div class="n">⑤ 光纖 / 光纜</div>
+      <div class="h">傳輸介質</div>
+      <div class="d">光真正跑過去的「水管」。資料中心海量鋪設。</div>
+      <div class="who"><span class="k">誰：</span><br>
+        <span class="pill us">GLW</span><span class="pill us">COHR</span></div>
+    </div>
+    <div class="seg s-conn">
+      <div class="n">⑥ 連接器 / 線材</div>
+      <div class="h">Connector / Harness</div>
+      <div class="d">機櫃內外接頭、線束；短距還會用「銅纜」省電省錢。</div>
+      <div class="who"><span class="k">誰：</span><br>
+        <span class="pill tw">貿聯 3665 ★</span><span class="pill us">CRDO ★<sup>銅纜</sup></span></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>關鍵心法：</b>問一家公司時，先定位它站在 ①～⑥ 哪一格 —— 站<b class="t">不同格 = 上下游</b>（不是競爭），站<b class="t">同一格</b>才是真對手。Glass Bridge 只動第④格。
+  </div>
+
+  <!-- ============ PART 2 : CROSS SECTION ============ -->
+  <h2>二、把第④格「耦合」拉近解剖：FAU vs Glass Bridge</h2>
+  <p class="lead">同一個剖面，左=傳統 FAU，右=康寧 Glass Bridge。看光波導(黃)怎麼從 PIC 接進光纖。</p>
+
+  <div class="legend">
+    <span><i class="sw" style="background:#ffb877"></i>承載基板</span>
+    <span><i class="sw" style="background:#8ad8ff"></i>矽光子 PIC</span>
+    <span><i class="sw" style="background:#ff6b9d"></i>InP 雷射</span>
+    <span><i class="sw" style="background:#ffd35c"></i>光波導</span>
+    <span><i class="sw" style="background:#7fe3b0"></i>FAU 玻璃座</span>
+    <span><i class="sw" style="background:#b99cff"></i>Glass Bridge</span>
+    <span><i class="sw" style="background:#e8eef5"></i>光纖</span>
+  </div>
+
+  <svg viewBox="0 0 1000 560" role="img" aria-label="耦合剖面圖">
+    <defs>
+      <linearGradient id="gPic" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8ad8ff"/><stop offset="1" stop-color="#3a9fd6"/></linearGradient>
+      <linearGradient id="gSub" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb877"/><stop offset="1" stop-color="#c97f3e"/></linearGradient>
+      <linearGradient id="gFau" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9af0c0"/><stop offset="1" stop-color="#4cbf86"/></linearGradient>
+      <linearGradient id="gBr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cdb3ff"/><stop offset="1" stop-color="#8f6fe0"/></linearGradient>
+      <linearGradient id="gFib" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#b8c2d0"/></linearGradient>
+    </defs>
+
+    <line x1="500" y1="70" x2="500" y2="500" stroke="#2a3344" stroke-width="1.5" stroke-dasharray="5 5"/>
+
+    <!-- LEFT : FAU -->
+    <text x="250" y="46" fill="#ff7a85" font-size="17" font-weight="800" text-anchor="middle">傳統做法：FAU 光纖陣列</text>
+    <text x="250" y="66" fill="#9aa7b8" font-size="12" text-anchor="middle">多一個零件、要主動對準、膠合 → 貴又慢</text>
+    <rect x="40" y="430" width="430" height="40" rx="5" fill="url(#gSub)" stroke="#d98f4e"/>
+    <text x="120" y="455" fill="#2a1a0a" font-size="12.5" font-weight="800">承載基板</text>
+    <rect x="70" y="372" width="170" height="58" rx="4" fill="url(#gPic)" stroke="#2f8fc4"/>
+    <text x="155" y="416" fill="#04293a" font-size="13.5" font-weight="800" text-anchor="middle">矽光子 PIC</text>
+    <rect x="84" y="350" width="50" height="24" rx="3" fill="#ff6b9d" stroke="#c93f70"/>
+    <text x="109" y="366" fill="#3a0018" font-size="10.5" font-weight="800" text-anchor="middle">InP 雷射</text>
+    <path d="M134 362 L150 388 L235 388" stroke="#ffd35c" stroke-width="3" fill="none"/>
+    <polygon points="235,385 235,391 246,388" fill="#ffd35c"/>
+    <text x="190" y="382" fill="#ffd35c" font-size="10">光波導 (~1–3µm)</text>
+    <rect x="246" y="384" width="10" height="10" fill="#5a4a2a" opacity="0.8"/>
+    <text x="251" y="350" fill="#ff7a85" font-size="10.5" text-anchor="middle">膠合縫</text>
+    <line x1="251" y1="356" x2="251" y2="382" stroke="#ff7a85" stroke-dasharray="2 2"/>
+    <rect x="256" y="368" width="120" height="48" rx="3" fill="url(#gFau)" stroke="#1f7a4c"/>
+    <text x="316" y="408" fill="#063" font-size="12" font-weight="800" text-anchor="middle">FAU 玻璃座</text>
+    <polygon points="262,384 278,384 270,396" fill="#0e131d" opacity="0.6"/>
+    <text x="316" y="382" fill="#063" font-size="9.5" text-anchor="middle">V 型槽嵌光纖</text>
+    <rect x="376" y="382" width="94" height="14" rx="7" fill="url(#gFib)" stroke="#8a93a8"/>
+    <line x1="376" y1="389" x2="470" y2="389" stroke="#ffd35c" stroke-width="2"/>
+    <text x="430" y="378" fill="#cdd6e3" font-size="10" text-anchor="middle">光纖 (芯~9µm)</text>
+    <text x="251" y="436" fill="#ff7a85" font-size="11" font-weight="700" text-anchor="middle">↑ 對準誤差 &lt; 1µm 才不漏光（最難）</text>
+
+    <!-- RIGHT : GLASS BRIDGE -->
+    <text x="750" y="46" fill="#b99cff" font-size="17" font-weight="800" text-anchor="middle">康寧做法：Glass Bridge 玻璃光橋</text>
+    <text x="750" y="66" fill="#9aa7b8" font-size="12" text-anchor="middle">玻璃內建波導直接導光、被動對準 → 省掉 FAU</text>
+    <rect x="530" y="430" width="430" height="40" rx="5" fill="url(#gSub)" stroke="#d98f4e"/>
+    <text x="610" y="455" fill="#2a1a0a" font-size="12.5" font-weight="800">承載基板</text>
+    <rect x="560" y="372" width="170" height="58" rx="4" fill="url(#gPic)" stroke="#2f8fc4"/>
+    <text x="645" y="416" fill="#04293a" font-size="13.5" font-weight="800" text-anchor="middle">矽光子 PIC</text>
+    <rect x="574" y="350" width="50" height="24" rx="3" fill="#ff6b9d" stroke="#c93f70"/>
+    <text x="599" y="366" fill="#3a0018" font-size="10.5" font-weight="800" text-anchor="middle">InP 雷射</text>
+    <path d="M624 362 L640 388 L726 388" stroke="#ffd35c" stroke-width="3" fill="none"/>
+    <rect x="726" y="360" width="140" height="58" rx="4" fill="url(#gBr)" stroke="#7a5fd0"/>
+    <text x="796" y="412" fill="#1a0a3a" font-size="11.5" font-weight="800" text-anchor="middle">Glass Bridge</text>
+    <path d="M726 388 C 770 388 770 389 866 389" stroke="#ffd35c" stroke-width="3" fill="none"/>
+    <path d="M726 388 C 790 372 820 372 866 380" stroke="#ffd35c" stroke-width="1.4" fill="none" opacity="0.7"/>
+    <text x="796" y="378" fill="#ffe9a8" font-size="9.5" text-anchor="middle">離子交換波導</text>
+    <rect x="866" y="382" width="94" height="14" rx="7" fill="url(#gFib)" stroke="#8a93a8"/>
+    <line x1="866" y1="389" x2="960" y2="389" stroke="#ffd35c" stroke-width="2"/>
+    <text x="918" y="378" fill="#cdd6e3" font-size="10" text-anchor="middle">光纖</text>
+    <text x="796" y="436" fill="#6ee7a8" font-size="11" font-weight="700" text-anchor="middle">✓ 被動對準、無 FAU、損耗 &lt; 2dB</text>
+    <text x="750" y="492" fill="#b99cff" font-size="11.5" text-anchor="middle">首版規格：PIC 間距 ≥ 30µm　·　半導體級晶圓製程</text>
+    <text x="250" y="492" fill="#ff7a85" font-size="11.5" text-anchor="middle">被取代的就是「FAU 玻璃座 + 對準膠合」這整段</text>
+  </svg>
+
+  <div class="note red">
+    <b>為什麼這段最難（尺寸落差 dimensional gap）：</b>
+    矽光子 PIC 裡光走的「波導」只有 <b>約 1–3 微米</b>寬，光纖纖芯卻有 <b>約 9 微米</b>、外徑更達 125µm。兩邊差好幾倍，<b>對不準就漏光</b>。傳統 <b>FAU</b> 是一塊開了 V 型槽的玻璃座，把光纖嵌好、<b>主動對準＜1µm</b>、用膠黏到 PIC —— 多零件、慢、貴、良率難。
+  </div>
+  <div class="note grn">
+    <b>Glass Bridge 怎麼解：</b>用半導體<b>離子交換製程</b>，直接在玻璃裡「長出」一條<b>由窄漸寬</b>的波導，左端接 PIC 細波導、右端接粗光纖，自己當轉換橋；靠結構<b>被動對準</b>，耦合損耗壓到 <b>&lt; 2dB</b> → <b>整段 FAU 被省掉</b>，這就是「利空 FAU 廠」的由來。
+  </div>
+
+  <h2 style="font-size:18px;border-left-color:var(--gold)">⭐ 真正的關鍵：對準方式 — 主動 vs 被動</h2>
+  <p class="lead">換掉的不是零件，是「怎麼對準」。這才是 CPO 能不能量產的命門。</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <div style="background:var(--panel);border:1px solid #3a1f25;border-top:3px solid var(--red);border-radius:12px;padding:16px">
+      <div style="font-size:16px;font-weight:800;color:var(--red)">主動對準 (active)</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:10px">FAU 在做的</div>
+      <div style="font-size:13.5px;color:#f0d5da">開雷射 → 一邊看光強度 → 一邊用機台微調光纖 → 調到最亮才膠合。</div>
+      <div style="font-size:13px;color:#cdd6e3;margin-top:10px">🔦 <b style="color:var(--txt)">像</b>：黑暗中拿手電筒慢慢喬到對方眼睛</div>
+      <div style="font-size:13px;color:#cdd6e3;margin-top:6px">🐌 <b style="color:var(--txt)">一條條單獨喬</b>，慢、貴、靠精密機台</div>
+      <div style="font-size:13px;color:var(--red);margin-top:6px;font-weight:700">❌ CPO 一封裝要接幾十~上百條光纖 → 不可能規模化</div>
+    </div>
+    <div style="background:var(--panel);border:1px solid #1d3a2c;border-top:3px solid var(--green);border-radius:12px;padding:16px">
+      <div style="font-size:16px;font-weight:800;color:var(--green)">被動對準 (passive)</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:10px">Glass Bridge 在做的</div>
+      <div style="font-size:13.5px;color:#cfeede">靠結構本身（光刻定義的溝槽/止擋）卡到對的位置 → 不通電、不即時微調。</div>
+      <div style="font-size:13px;color:#cdd6e3;margin-top:10px">🧱 <b style="color:var(--txt)">像</b>：樂高，形狀只有一種插法，插下去自動對齊</div>
+      <div style="font-size:13px;color:#cdd6e3;margin-top:6px">⚡ <b style="color:var(--txt)">整片晶圓一次平行做完</b>，快、便宜、製程攤掉</div>
+      <div style="font-size:13px;color:var(--green);margin-top:6px;font-weight:700">✓ 可規模化 → 成本崩 → CPO 才量產得起來</div>
+    </div>
+  </div>
+  <div class="note grn">
+    <b>為什麼這是命門：</b>卡住 CPO 多年無法量產的最大魔王，是「光封裝太貴、太慢」，主因正是<b>主動對準</b>。算力、矽光子早就有了，停在 PPT 上就是因為「接光纖這段不能規模化」。<b class="t">被動對準不是順便的優點，是把 CPO 從實驗室推向量產的鑰匙</b> —— 市場反應的不是「出了個連接器」，而是「<b class="t">有人可能把 CPO 的成本牆打穿了</b>」。
+  </div>
+  <div class="note">
+    <b>別過度神化：</b>首版 <b class="t">pitch ≥30µm</b> 只是「夠用」；被動對準要成立得靠<b class="t">製程公差夠穩</b>（良率/認證未過關）；客戶還要<b class="t">重做 PIC 光介面</b>（spot-size converter、bump）才能用 → 切換成本是短期最大阻力。
+  </div>
+
+  <!-- ============ PART 3 : MAP TO HOLDINGS ============ -->
+  <h2>三、誰做哪一段 + 你的持倉會不會被 Glass Bridge 打</h2>
+  <table>
+    <tr><th>段 / 構件</th><th>在做什麼</th><th>誰做（★=你的持倉）</th><th>Glass Bridge 影響</th></tr>
+    <tr class="mine"><td>① SerDes/DSP</td><td>電訊號整形加速</td><td>CRDO ★、MRVL、AVGO</td><td class="ok">不受害</td></tr>
+    <tr class="mine"><td>② 光源 / InP 雷射</td><td>發雷射光 + 磊晶地基</td><td>聯亞 3081 ★、LITE ★、COHR</td><td class="ok">不受害，反受惠</td></tr>
+    <tr class="mine"><td>③ 矽光子 PIC</td><td>把資料調變到光上</td><td>CRDO ★<sup>(DustPhotonics)</sup>、AVGO</td><td class="ok">不受害（橋的客戶）</td></tr>
+    <tr><td>④ 耦合 FAU</td><td>把光纖對準黏到 PIC</td><td>上詮、大立光</td><td class="hit">直接被取代</td></tr>
+    <tr><td>④ Glass Bridge</td><td>玻璃內波導取代 FAU</td><td>GLW 康寧（發動方）</td><td class="mid">受惠 / 搶餅</td></tr>
+    <tr class="mine"><td>⑤ 光纖 / ⑥ 連接</td><td>傳輸水管 + 接頭線材</td><td>GLW、COHR；貿聯 3665 ★</td><td class="ok">不受害</td></tr>
+  </table>
+
+  <div class="key">
+    <b>一句話結論：</b>你四檔持倉（聯亞②、CRDO①③⑥、LITE②、貿聯⑥）<b>沒有一個站在第④格 FAU</b> —— 那才是 Glass Bridge 真正開刀的位置（上詮、大立光）。你的組合站在光源、晶片、連接這幾格，相對<b>安全甚至受惠</b>。
+  </div>
+
+  <div class="note">
+    <b>* CRDO 的「光」怎麼來的：</b>原本只有「光模組裡的 DSP 晶片」（是電）；<b class="t">2026/5 以最高 ~$1.3bn 收購以色列 DustPhotonics</b>，補進矽光子 PIC + 400/800/1.6T 光收發器，才真正握有「光本體」，形成 SerDes→DSP→矽光子→系統 一條龍。投資結論／估值／受害名單見 <b class="t">glw-glass-bridge.md</b>。
+  </div>
+
+  <footer>光互連教學（分工地圖 + 耦合剖面合輯）· 教學用、非投資建議 · 2026-06-30</footer>
+</div>
+</body>
+</html>

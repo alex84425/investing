@@ -21,12 +21,13 @@
 <body>
 <div class="wrap">
   <h1>AI 晶片封裝<span class="em">剖面圖</span> — 誰疊在誰身上</h1>
-  <div class="sub">側視剖面 · 由下而上：主機板 → 基板 → 矽中介層 → GPU＋HBM 並排坐在上面 · 2026-06-29</div>
+  <div class="sub">側視剖面 · 由下而上：主機板 → 基板 → 矽中介層 → GPU＋HBM 並排坐在上面 · 左上附「記憶體階梯：HBF 補在哪」· 2026-06-30</div>
 
   <div class="legend">
     <span><i class="sw" style="background:#3a4257"></i>結構層</span>
     <span><i class="sw" style="background:#ffcc66"></i>GPU / Logic</span>
     <span><i class="sw" style="background:#6ee7a8"></i>HBM 記憶體疊層</span>
+    <span><i class="sw" style="background:#e0a93f"></i>HBF（NAND 疊層）新</span>
     <span><i class="sw" style="background:#4cc2ff"></i>CPO 光引擎（矽光子）</span>
     <span><i class="sw" style="background:#ff6b9d"></i>InP 磷化銦雷射晶粒</span>
     <span><i class="sw" style="background:#ffa657"></i>基板 ABF→玻璃</span>
@@ -42,6 +43,28 @@
       <linearGradient id="gHbm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9af0c0"/><stop offset="1" stop-color="#4cbf86"/></linearGradient>
       <linearGradient id="gCpo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8ad8ff"/><stop offset="1" stop-color="#3a9fd6"/></linearGradient>
     </defs>
+
+    <!-- ===== 記憶體階梯 inset：HBF 補在哪 ===== -->
+    <g>
+      <rect x="58" y="80" width="468" height="182" rx="10" fill="#10161f" stroke="#2a3344"/>
+      <text x="78" y="106" fill="#e6ebf2" font-size="14.5" font-weight="800">記憶體階梯：HBF 補在 HBM 與 SSD 之間</text>
+      <!-- HBM tier -->
+      <rect x="78" y="118" width="290" height="32" rx="4" fill="url(#gHbm)" stroke="#1f7a4c"/>
+      <text x="92" y="139" fill="#063" font-size="12.5" font-weight="800">HBM（DRAM 疊層）</text>
+      <text x="378" y="139" fill="#9aa7b8" font-size="11.5">最快·最貴·容量小</text>
+      <!-- HBF tier (NEW) -->
+      <rect x="78" y="156" width="290" height="32" rx="4" fill="url(#gGpu)" stroke="#c98f2f"/>
+      <text x="92" y="177" fill="#3a2400" font-size="12.5" font-weight="800">HBF（NAND 疊層）★新</text>
+      <text x="378" y="177" fill="#ffcc66" font-size="11.5">夠快·大容量·中價</text>
+      <!-- SSD tier -->
+      <rect x="78" y="194" width="290" height="32" rx="4" fill="#3a4257" stroke="#4a5468"/>
+      <text x="92" y="215" fill="#cdd6e3" font-size="12.5" font-weight="800">SSD（NAND 一般）</text>
+      <text x="378" y="215" fill="#9aa7b8" font-size="11.5">最慢·最便宜·海量</text>
+      <text x="78" y="248" fill="#ffcc66" font-size="11.5">HBF 與 HBM 同介面 → 可佔 HBM 槽位換容量；與 SSD 同樣是 NAND，差在封裝與售價</text>
+    </g>
+    <!-- 連到封裝上右側 HBM 槽 -->
+    <path d="M368 172 C 520 196 600 280 700 330" stroke="#ffcc66" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/>
+    <text x="556" y="252" fill="#ffcc66" font-size="11.5">↘ 部分 HBM 槽位未來可換成 HBF</text>
 
     <!-- ===== PCB 主機板 ===== -->
     <rect x="70" y="568" width="860" height="56" rx="6" fill="url(#gPcb)" stroke="#4a5468"/>
@@ -161,6 +184,81 @@
     旁邊塞 <b>CPO 光引擎</b> 把光纖直接拉出去。<br>
     💡 <b>CPO 裡的粉紅色小塊＝InP 磷化銦雷射晶粒</b>：矽光子本身不會發光，真正的雷射光源得用 <b>磷化銦 (InP)</b>，以異質整合貼到矽光子上 —— 這才是整顆 CPO 最關鍵、最難做、價值最高的料。<br>
     👉 把圓晶圓中介層換成大方板、底下配玻璃基板，就升級成下一代 <b>CoPoS</b>。
+  </div>
+
+  <div class="note" style="background:#181410;border-color:#3a3018;color:#ecdfc0">
+    <b style="color:#ffcc66">HBF 是什麼、為什麼畫在這？</b>　左上角階梯圖就是它的主場。<b style="color:#fff">HBF（High Bandwidth Flash 高頻寬快閃）</b>＝把 HBM「垂直疊層＋寬介面」那套<b>從 DRAM 換成 NAND</b>，2026/2 由 <b>SanDisk＋SK海力士</b>發起標準化，主打 <b>AI 推論</b>要的「大容量＋夠快」。
+    頻寬約 <b>1.6 TB/s</b>（比頂規 SSD 快 ~50 倍）、容量是 HBM 的 <b>8–16 倍</b>。<br>
+    🔑 因為它<b>刻意做成和 HBM 同介面</b>，理論上能<b>佔用封裝上的 HBM 槽位</b>（虛線箭頭），所以才畫進這張剖面 —— 但它真正的角色是「<b>記憶體階梯新增一層</b>」，不是取代 HBM。<br>
+    💰 <b style="color:#ff8a5c">投資點</b>：SSD 與 HBF <b>同樣都是 NAND 做的</b>，差在封裝與售價。HBF 放量會把 NAND 產能往高價端抽 → 重演 HBM 拉漲 DRAM 的「<b>排擠效應</b>」→ NAND/SSD 漲價。主推方是 SK海力士/SanDisk，但<b>美光(MU)自己也做 NAND</b>，漲價這側照樣受惠。
+  </div>
+
+  <h2 style="font-size:19px;margin:26px 0 4px;color:#e6ebf2">用<span style="color:#ffcc66">蓋大樓</span>理解：封裝是一個街區</h2>
+  <div style="color:#9aa7b8;font-size:13px;margin-bottom:8px">HBM 是純 DRAM 大樓、HBF 是新蓋的純 NAND 大樓（外型一樣能並排站）；SSD 本來是城外倉庫，HBF 把它搬進工廠隔壁</div>
+  <svg viewBox="0 0 1000 320" role="img" aria-label="街區比喻圖">
+    <defs>
+      <linearGradient id="gWh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a5468"/><stop offset="1" stop-color="#2e3447"/></linearGradient>
+    </defs>
+
+    <text x="20" y="30" fill="#cdd6e3" font-size="14" font-weight="800">工廠園區（封裝）＝ GPU ＋ 隔壁的記憶體大樓，走 TSV / HBM 快速電梯</text>
+
+    <!-- 封裝/中介層 base -->
+    <rect x="40" y="252" width="430" height="20" rx="3" fill="url(#gInt)" stroke="#6b768c"/>
+    <text x="255" y="266" fill="#dfe5ef" font-size="11.5" font-weight="700" text-anchor="middle">封裝 / 矽中介層（GPU 隔壁）</text>
+
+    <!-- HBM tower (DRAM) -->
+    <g>
+      <rect x="78" y="235" width="74" height="15" fill="#3aa66e" stroke="#1f7a4c"/>
+      <rect x="78" y="218" width="74" height="15" fill="url(#gHbm)" stroke="#1f7a4c"/>
+      <rect x="78" y="201" width="74" height="15" fill="url(#gHbm)" stroke="#1f7a4c"/>
+      <rect x="78" y="184" width="74" height="15" fill="url(#gHbm)" stroke="#1f7a4c"/>
+      <rect x="78" y="167" width="74" height="15" fill="url(#gHbm)" stroke="#1f7a4c"/>
+      <rect x="78" y="150" width="74" height="15" fill="url(#gHbm)" stroke="#1f7a4c"/>
+      <line x1="115" y1="150" x2="115" y2="250" stroke="#0b3d27" stroke-width="2" opacity="0.6" stroke-dasharray="3 3"/>
+      <text x="115" y="142" fill="#9af0c0" font-size="12.5" font-weight="800" text-anchor="middle">HBM</text>
+      <text x="115" y="290" fill="#9aa7b8" font-size="11" text-anchor="middle">純 DRAM</text>
+      <text x="115" y="305" fill="#9aa7b8" font-size="10.5" text-anchor="middle">快·貴·容量小</text>
+    </g>
+
+    <!-- GPU 工廠 -->
+    <rect x="195" y="180" width="100" height="72" rx="4" fill="url(#gGpu)" stroke="#c98f2f"/>
+    <text x="245" y="212" fill="#3a2400" font-size="15" font-weight="800" text-anchor="middle">GPU</text>
+    <text x="245" y="230" fill="#3a2400" font-size="11" text-anchor="middle">工廠</text>
+
+    <!-- HBF tower (NAND) -->
+    <g>
+      <rect x="338" y="235" width="74" height="15" fill="#c98f2f" stroke="#a06d20"/>
+      <rect x="338" y="218" width="74" height="15" fill="url(#gGpu)" stroke="#a06d20"/>
+      <rect x="338" y="201" width="74" height="15" fill="url(#gGpu)" stroke="#a06d20"/>
+      <rect x="338" y="184" width="74" height="15" fill="url(#gGpu)" stroke="#a06d20"/>
+      <rect x="338" y="167" width="74" height="15" fill="url(#gGpu)" stroke="#a06d20"/>
+      <rect x="338" y="150" width="74" height="15" fill="url(#gGpu)" stroke="#a06d20"/>
+      <line x1="375" y1="150" x2="375" y2="250" stroke="#5a3d10" stroke-width="2" opacity="0.6" stroke-dasharray="3 3"/>
+      <text x="375" y="142" fill="#ffcc66" font-size="12.5" font-weight="800" text-anchor="middle">HBF ★新</text>
+      <text x="375" y="290" fill="#9aa7b8" font-size="11" text-anchor="middle">純 NAND</text>
+      <text x="375" y="305" fill="#9aa7b8" font-size="10.5" text-anchor="middle">夠快·大容量·中價</text>
+    </g>
+
+    <!-- 慢速公路 -->
+    <line x1="472" y1="244" x2="706" y2="244" stroke="#6b768c" stroke-width="3" stroke-dasharray="8 5"/>
+    <text x="589" y="234" fill="#ff8a5c" font-size="12" font-weight="700" text-anchor="middle">PCIe 慢速公路（遠、慢 ~50×）</text>
+
+    <!-- 城外 SSD 倉庫 -->
+    <rect x="712" y="170" width="248" height="82" rx="4" fill="url(#gWh)" stroke="#6b768c"/>
+    <polygon points="712,170 836,138 960,170" fill="#3a4257" stroke="#6b768c"/>
+    <text x="836" y="206" fill="#dfe5ef" font-size="14" font-weight="800" text-anchor="middle">SSD ＝ NAND 倉庫</text>
+    <text x="836" y="228" fill="#9aa7b8" font-size="11.5" text-anchor="middle">城外·最便宜·海量·最慢</text>
+    <text x="836" y="278" fill="#9aa7b8" font-size="11" text-anchor="middle">本來就在封裝外（晶片外）</text>
+
+    <!-- HBF 搬遷箭頭 -->
+    <path d="M740 160 C 600 90 470 95 378 138" stroke="#ffcc66" stroke-width="2" fill="none" stroke-dasharray="5 4" marker-end="url(#ah)"/>
+    <defs><marker id="ah" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffcc66"/></marker></defs>
+    <text x="560" y="78" fill="#ffcc66" font-size="12.5" font-weight="700" text-anchor="middle">HBF 的魔法：把城外倉庫的 NAND，搬成工廠隔壁一棟樓 → 接上 HBM 級快馬路</text>
+  </svg>
+  <div class="note">
+    <b>重點：街區變混合，但每棟樓本身是純的。</b>
+    HBM＝整棟 DRAM、HBF＝整棟 NAND，<b>不是一棟樓裡混疊</b>；因為兩者<b>同介面、同外型</b>，才能並排站進同一個封裝。
+    SSD 本來在<b>城外（封裝外、走慢速 PCIe）</b>；HBF 等於<b>同樣的便宜 NAND 料，只換了地點＋換了快馬路</b>，就從「城外倉庫」升級成「隔壁大樓」 —— 這就是它比 SSD 快 ~50×、又比 HBM 便宜大容量的原因。
   </div>
 
   <div class="note" style="background:#101a14;border-color:#1e3a2a;color:#cfe9da">
